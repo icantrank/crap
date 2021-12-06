@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    //remove the script tag if you are using in a worker
+    
+    function main() {
+        // app goes here
+        let h1 = document.createElement('h1')
+        h1.textContent = 'Hello World!'
+        document.body.appendChild(h1)
+    }
+
+    function renderPage() {
+        if (typeof window == 'undefined') {
+            bindWorkerEvents()
+        } else {
+            runScript()
+        }
+    }
+
+    function bindWorkerEvents() {
+        addEventListener("fetch", event => {
+            event.respondWith(handleRequest(event.request))
+        })
+    }
+
+    function runScript() {
+        document.addEventListener('DOMContentLoaded', main)
+    }
+
+    async function handleRequest(request) {
+        // when in worker, document is not defined, used string concat
+        let script = `${main}
+        document.addEventListener('DOMContentLoaded', main)`
+
+        let html = "<script>" + script + "</sc"+"ript>"
+
+        return new Response(html, {
+            headers: {
+                "Content-Type": "text/html; charset=UTF-8"
+            }
+        })
+    }
+    renderPage()
+</script>
