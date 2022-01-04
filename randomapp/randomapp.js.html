@@ -1,0 +1,82 @@
+<script type="text/javascript">
+    //remove the script tag if you are using in a worker
+
+
+
+    function main() {
+        // app goes here
+        let app = {}
+
+        //animation frame fallback
+        window.requestAnimationFrame = window.requestAnimationFrame
+            || window.mozRequestAnimationFrame
+            || window.webkitRequestAnimationFrame
+            || window.msRequestAnimationFrame
+            || function (f) { return setTimeout(f, 1000 / 60) } // 60hz
+
+        window.cancelAnimationFrame = window.cancelAnimationFrame
+            || window.mozCancelAnimationFrame
+            || function (requestID) { clearTimeout(requestID) } 
+
+
+        app.init = function () {
+            gamebar = document.createElement('div')
+            gamebar.style.width = window.innerWidth + 'px'
+            gamebar.style.height = '400px'
+            gamebar.style.overflowX = 'visible'
+            gamebar.style.position = 'relative'
+            gamebar.style.background = 'url(https://via.placeholder.com/' + window.innerWidth + 'x400) center center no-repeat'
+            document.body.appendChild(gamebar)
+            // renderCharacter
+            // bindControls
+            app.runLoop()
+        }
+        app.runLoop = function () {
+            app.loopCount = app.loopCount || 0
+            app.loopCount++
+            console.log(app.loopCount)
+
+            requestAnimationFrame(function () {
+                gamebar.style.left = -app.loopCount + 'px'
+                gamebar.style.width = window.innerWidth + app.loopCount + 'px'
+                app.runLoop()
+            })
+        }
+
+        app.init()
+
+    }
+
+    function renderPage() {
+        if (typeof window == 'undefined') {
+            bindWorkerEvents()
+        } else {
+            runScript()
+        }
+    }
+
+    function bindWorkerEvents() {
+        addEventListener("fetch", event => {
+            event.respondWith(handleRequest(event.request))
+        })
+    }
+
+    function runScript() {
+        document.addEventListener('DOMContentLoaded', main)
+    }
+
+    async function handleRequest(request) {
+        // when in worker, document is not defined, used string concat
+        let script = `${main}
+        document.addEventListener('DOMContentLoaded', main)`
+
+        let html = "<script>" + script + "</sc" + "ript>"
+
+        return new Response(html, {
+            headers: {
+                "Content-Type": "text/html; charset=UTF-8"
+            }
+        })
+    }
+    renderPage()
+</script>
