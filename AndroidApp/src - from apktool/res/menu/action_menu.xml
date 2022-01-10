@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:icon="@drawable/selector_play" android:id="@id/menu_play" android:title="Play" android:showAsAction="always" />
+</menu>
