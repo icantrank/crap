@@ -15,6 +15,9 @@ function() {
 
           product.title = product.name
           delete product.name
+
+          // return prod back to the result of map
+          return product
       })
 
       // don't need to return anything bc we change the existing products array
